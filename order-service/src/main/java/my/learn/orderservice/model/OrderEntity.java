@@ -1,9 +1,6 @@
 package my.learn.orderservice.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +14,7 @@ import java.util.UUID;
 @Entity
 public class OrderEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID orderId;
     private double price;
     @Enumerated(value = EnumType.STRING)

@@ -1,28 +1,34 @@
 package my.learn.orderservice.config;
 
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.transaction.TransactionManager;
-
-import javax.sql.DataSource;
 
 @Configuration
 public class DbConfig {
 
-    @Bean
-    public DataSource dataSource() {
-        return new DriverManagerDataSource(
-                "${spring.datasource.url}",
-                "${spring.datasource.username}",
-                "${spring.datasource.password}"
-        );
-    }
-
-    @Bean
-    public TransactionManager transactionManager(DataSource dataSource) {
-        return new DataSourceTransactionManager(dataSource);
-    }
+//@Bean
+//public DriverManagerDataSource driverManagerDataSource() {
+//    DriverManagerDataSource dataSource = new DriverManagerDataSource();
+//
+//    dataSource.setUrl("jdbc:mysql://localhost:3306/testdb");
+//    dataSource.setUsername("root");
+//    dataSource.setPassword("qwerty123456");
+//    return dataSource;
+//}
+//
+//    @Bean
+//    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DriverManagerDataSource dataSource) {
+//        LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
+//        emf.setDataSource(dataSource);
+//        emf.setPackagesToScan("my.learn.model");
+//        emf.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+//        return emf;
+//    }
+//
+//    @Bean
+//    public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
+//        JpaTransactionManager transactionManager = new JpaTransactionManager();
+//        transactionManager.setEntityManagerFactory(emf);
+//        return transactionManager;
+//    }
 }

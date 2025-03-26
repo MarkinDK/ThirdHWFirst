@@ -23,6 +23,6 @@ public class KafkaTopicConfig {
     @Qualifier("paymentRejectedTopic")
     @Bean
     public NewTopic paymentRejectedTopic() {
-        return TopicBuilder.name(paymentApprovedTopic).build();
+        return TopicBuilder.name(paymentRejectedTopic).build();
     }
 }

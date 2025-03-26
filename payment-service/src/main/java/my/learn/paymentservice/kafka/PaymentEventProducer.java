@@ -2,6 +2,7 @@ package my.learn.paymentservice.kafka;
 
 import my.learn.basedomain.event.PaymentEvent;
 import my.learn.basedomain.model.payment.PaymentInfo;
+import my.learn.basedomain.model.payment.PaymentStatus;
 import my.learn.paymentservice.model.Payment;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,6 +36,7 @@ public class PaymentEventProducer {
         paymentEvent.setPaymentInfo(
                 new PaymentInfo(approvedPayment.getOrderId(), approvedPayment.getPaymentId(), approvedPayment.getPrice())
         );
+        paymentEvent.setStatus(PaymentStatus.APPROVED);
 
         Message<PaymentEvent> message = MessageBuilder
                 .withPayload(paymentEvent)
@@ -48,6 +50,7 @@ public class PaymentEventProducer {
         paymentEvent.setPaymentInfo(
                 new PaymentInfo(rejectedPayment.getOrderId(), rejectedPayment.getPaymentId(), rejectedPayment.getPrice())
         );
+        paymentEvent.setStatus(PaymentStatus.REJECTED);
 
         Message<PaymentEvent> message = MessageBuilder
                 .withPayload(paymentEvent)
