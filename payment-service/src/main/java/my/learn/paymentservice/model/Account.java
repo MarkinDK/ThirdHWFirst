@@ -5,7 +5,6 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import my.learn.basedomain.model.payment.PaymentStatus;
 
 import java.util.UUID;
 
@@ -13,11 +12,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Payment {
+public class Account {
     @Id
-    private UUID paymentId;
-    private UUID orderId;
-    private UUID ticketId;
-    private double price;
-    private PaymentStatus status;
+    private UUID id;
+    private Double amount;
 }

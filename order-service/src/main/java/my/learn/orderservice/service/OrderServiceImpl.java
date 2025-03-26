@@ -55,7 +55,7 @@ public class OrderServiceImpl implements OrderService {
         orderEvent.setOrderInfo(orderInfo);
         orderEvent.setStatus(OrderStatus.CREATED);
         orderEvent.setMessage("Order with id = " + savedOrder.getOrderId() + " created");
-        orderEventProducer.sendOrderCreatedEvent(orderEvent);
+        orderEventProducer.produceOrderCreatedEvent(orderEvent);
 
         return new OrderResponseDto(orderInfo, OrderStatus.CREATED);
     }

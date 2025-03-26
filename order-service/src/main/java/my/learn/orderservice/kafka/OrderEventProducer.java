@@ -24,7 +24,7 @@ public class OrderEventProducer {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public CompletableFuture<SendResult<String, OrderEvent>> sendOrderCreatedEvent(OrderEvent orderEvent) {
+    public CompletableFuture<SendResult<String, OrderEvent>> produceOrderCreatedEvent(OrderEvent orderEvent) {
         Message<OrderEvent> message = MessageBuilder
                 .withPayload(orderEvent)
                 .setHeader(KafkaHeaders.TOPIC, orderCreatedTopic.name())
