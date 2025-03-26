@@ -1,28 +1,21 @@
 package my.learn.orderservice.controller;
 
-import my.learn.basedomain.order.OrderEvent;
-import my.learn.basedomain.order.OrderInfo;
-import my.learn.basedomain.order.OrderStatus;
-import my.learn.orderservice.kafka.OrderProducer;
+import my.learn.basedomain.dto.OrderRequestDto;
+import my.learn.orderservice.kafka.OrderEventProducer;
 import my.learn.orderservice.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.UUID;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/orders")
 public class OrderController {
     private final OrderService orderService;
-    private final OrderProducer orderProducer;
+    private final OrderEventProducer orderEventProducer;
 
-    public OrderController(OrderService orderService, OrderProducer orderProducer) {
+    public OrderController(OrderService orderService, OrderEventProducer orderEventProducer) {
         this.orderService = orderService;
-        this.orderProducer = orderProducer;
+        this.orderEventProducer = orderEventProducer;
     }
 
     @GetMapping
@@ -31,13 +24,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createOrder() {
-        orderProducer.sendOrderEvent(
-                new OrderEvent(
-                        new OrderInfo(UUID.randomUUID(), 1000),
-                        OrderStatus.CREATED,
-                        "Some order created in kafka"
-                ));
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> createOrder(@RequestBody OrderRequestDto orderRequestDto) {
+        return ResponseEntity.ok(orderService.createOrder(orderRequestDto));
     }
 }

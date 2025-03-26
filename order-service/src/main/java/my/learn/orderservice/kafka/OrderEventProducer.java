@@ -1,31 +1,34 @@
 package my.learn.orderservice.kafka;
 
-import my.learn.basedomain.order.OrderEvent;
+import my.learn.basedomain.event.OrderEvent;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.CompletableFuture;
+
 @Service
-public class OrderProducer {
+public class OrderEventProducer {
     @Qualifier("orderCreatedTopic")
-    private final NewTopic orderCreateTopic;
+    private final NewTopic orderCreatedTopic;
 
     private final KafkaTemplate<String, OrderEvent> kafkaTemplate;
 
-    public OrderProducer(NewTopic orderCreateTopic, KafkaTemplate<String, OrderEvent> kafkaTemplate) {
-        this.orderCreateTopic = orderCreateTopic;
+    public OrderEventProducer(NewTopic orderCreatedTopic, KafkaTemplate<String, OrderEvent> kafkaTemplate) {
+        this.orderCreatedTopic = orderCreatedTopic;
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendOrderEvent(OrderEvent orderEvent) {
+    public CompletableFuture<SendResult<String, OrderEvent>> sendOrderCreatedEvent(OrderEvent orderEvent) {
         Message<OrderEvent> message = MessageBuilder
                 .withPayload(orderEvent)
-                .setHeader(KafkaHeaders.TOPIC, orderCreateTopic.name())
+                .setHeader(KafkaHeaders.TOPIC, orderCreatedTopic.name())
                 .build();
-        kafkaTemplate.send(message);
+        return kafkaTemplate.send(message);
     }
 }

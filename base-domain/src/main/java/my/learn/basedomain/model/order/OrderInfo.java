@@ -1,4 +1,4 @@
-package my.learn.basedomain.order;
+package my.learn.basedomain.model.order;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
