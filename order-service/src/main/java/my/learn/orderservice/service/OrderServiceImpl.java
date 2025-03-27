@@ -2,11 +2,12 @@ package my.learn.orderservice.service;
 
 import my.learn.basedomain.dto.OrderRequestDto;
 import my.learn.basedomain.dto.OrderResponseDto;
-import my.learn.basedomain.event.PaymentEvent;
 import my.learn.basedomain.model.order.OrderInfo;
 import my.learn.basedomain.model.order.OrderStatus;
 import my.learn.basedomain.model.payment.PaymentInfo;
 import my.learn.basedomain.model.payment.PaymentStatus;
+import my.learn.basedomain.model.ticket.TicketInfo;
+import my.learn.basedomain.model.ticket.TicketStatus;
 import my.learn.orderservice.kafka.OrderEventProducer;
 import my.learn.orderservice.model.OrderEntity;
 import my.learn.orderservice.repository.OrderRepository;
@@ -14,8 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -57,6 +56,16 @@ public class OrderServiceImpl implements OrderService {
             orderEventProducer.produceOrderPaidEvent(updated);
         }
         return updated;
+    }
+
+    @Override
+    public OrderEntity updateOrderAfterTicketApproval(TicketInfo ticketInfo, TicketStatus status) {
+        OrderEntity order = orderRepository
+                .findById(ticketInfo.getOrderId())
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+        order.setStatus(OrderStatus.APPROVED);
+        order.setTicketId(ticketInfo.getTicketId());
+        return orderRepository.save(order);
     }
 
     private OrderEntity constructUpdatedOrderToSave(PaymentInfo paymentInfo, PaymentStatus status) {

@@ -14,10 +14,13 @@ public class OrderEventConsumer {
     }
 
     @KafkaListener(topics =
-            "${kafka.topic.name.ticket.approved}",
+            "${kafka.topic.name.order.paid}",
             groupId = "${spring.kafka.consumer.group-id}"
     )
     public void consumeOrderEvent(OrderEvent orderEvent) {
+        System.out.println();
+        System.out.println("HERE");
+        System.out.println();
         ticketService.createTicket(orderEvent.getOrderInfo());
     }
 }
