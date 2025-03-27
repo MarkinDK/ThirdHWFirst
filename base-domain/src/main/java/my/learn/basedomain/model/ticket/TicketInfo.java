@@ -10,8 +10,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TicketInfo {
-    private UUID orderId;
-    private UUID paymentId;
     private UUID ticketId;
-    private double price;
+    private UUID orderId;
 }

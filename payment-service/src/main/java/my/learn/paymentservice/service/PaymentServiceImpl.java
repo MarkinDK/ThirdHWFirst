@@ -35,11 +35,6 @@ public class PaymentServiceImpl implements PaymentService {
 
     @PostConstruct
     private void init() {
-//        paymentRepository.saveAll(List.of(
-//                new Payment(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 10, PaymentStatus.APPROVED),
-//                new Payment(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 20, PaymentStatus.REJECTED),
-//                new Payment(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), 30, PaymentStatus.REFUNDED)
-//        ));
         Account accountToSave = new Account();
         accountToSave.setAmount(10000.0);
         Account account = accountRepository.save(accountToSave);

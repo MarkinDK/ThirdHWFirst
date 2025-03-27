@@ -11,10 +11,18 @@ import org.springframework.kafka.config.TopicBuilder;
 public class KafkaTopicConfig {
     @Value("${kafka.topic.name.order.created}")
     private String orderCreatedTopic;
+    @Value("${kafka.topic.name.order.paid}")
+    private String orderPaidTopic;
 
     @Qualifier("orderCreatedTopic")
     @Bean
     public NewTopic orderCreatedTopic() {
         return TopicBuilder.name(orderCreatedTopic).build();
+    }
+
+    @Qualifier("orderPaidTopic")
+    @Bean
+    public NewTopic orderPaidTopic() {
+        return TopicBuilder.name(orderPaidTopic).build();
     }
 }

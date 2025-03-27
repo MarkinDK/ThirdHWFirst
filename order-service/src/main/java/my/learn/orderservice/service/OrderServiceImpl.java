@@ -1,9 +1,8 @@
 package my.learn.orderservice.service;
 
-import jakarta.annotation.PostConstruct;
 import my.learn.basedomain.dto.OrderRequestDto;
 import my.learn.basedomain.dto.OrderResponseDto;
-import my.learn.basedomain.event.OrderEvent;
+import my.learn.basedomain.event.PaymentEvent;
 import my.learn.basedomain.model.order.OrderInfo;
 import my.learn.basedomain.model.order.OrderStatus;
 import my.learn.basedomain.model.payment.PaymentInfo;
@@ -16,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -40,37 +40,40 @@ public class OrderServiceImpl implements OrderService {
         orderToSave.setStatus(OrderStatus.CREATED);
         OrderEntity savedOrder = orderRepository.save(orderToSave);
 
-        OrderInfo orderInfo = new OrderInfo();
-        orderInfo.setOrderId(savedOrder.getOrderId());
-        orderInfo.setPrice(savedOrder.getPrice());
+        orderEventProducer.produceOrderCreatedEvent(savedOrder);
 
-        sendOrderEvent(orderInfo, savedOrder);
-
-        return new OrderResponseDto(orderInfo, OrderStatus.CREATED);
+        return new OrderResponseDto(
+                new OrderInfo(savedOrder.getOrderId(), savedOrder.getPrice()),
+                OrderStatus.CREATED
+        );
     }
 
     @Transactional
     @Override
     public OrderEntity updateOrderAfterPayment(PaymentInfo paymentInfo, PaymentStatus status) {
-        Optional<OrderEntity> optionalOrder = orderRepository.findById(paymentInfo.getOrderId());
-        if (optionalOrder.isPresent()) {
-            OrderEntity order = optionalOrder.get();
-            order.setPaymentId(paymentInfo.getPaymentId());
-            switch (status) {
-                case APPROVED -> order.setStatus(OrderStatus.APPROVED);
-                case REJECTED -> order.setStatus(OrderStatus.REJECTED);
-                case REFUNDED -> order.setStatus(OrderStatus.CANCELLED);
+        OrderEntity orderToSave = constructUpdatedOrderToSave(paymentInfo, status);
+        OrderEntity updated = orderRepository.save(orderToSave);
+        if (updated.getStatus().equals(OrderStatus.PAID)) {
+            orderEventProducer.produceOrderPaidEvent(updated);
+        }
+        return updated;
+    }
+
+    private OrderEntity constructUpdatedOrderToSave(PaymentInfo paymentInfo, PaymentStatus status) {
+        OrderEntity order = orderRepository
+                .findById(paymentInfo.getOrderId())
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+        order.setPaymentId(paymentInfo.getPaymentId());
+        switch (status) {
+            case APPROVED -> {
+                order.setStatus(OrderStatus.PAID);
             }
-            return orderRepository.save(order);
-        } else throw new RuntimeException("Order not found");
-
+            case REJECTED -> {
+                order.setStatus(OrderStatus.REJECTED);
+            }
+            case REFUNDED -> order.setStatus(OrderStatus.CANCELLED);
+        }
+        return order;
     }
 
-    private void sendOrderEvent(OrderInfo orderInfo, OrderEntity savedOrder) {
-        OrderEvent orderEvent = new OrderEvent();
-        orderEvent.setOrderInfo(orderInfo);
-        orderEvent.setStatus(OrderStatus.CREATED);
-        orderEvent.setMessage("\nOrder with id = " + savedOrder.getOrderId() + " created\n");
-        orderEventProducer.produceOrderCreatedEvent(orderEvent);
-    }
 }

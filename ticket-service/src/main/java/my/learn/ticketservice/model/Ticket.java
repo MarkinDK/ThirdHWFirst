@@ -1,11 +1,11 @@
 package my.learn.ticketservice.model;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import my.learn.basedomain.model.ticket.TicketStatus;
 
 import java.util.UUID;
 
@@ -16,8 +16,6 @@ import java.util.UUID;
 public class Ticket {
     @Id
     private UUID ticketId;
-    @Column(unique = true, nullable = false)
     private UUID orderId;
-    @Column(unique = true, nullable = false)
-    private UUID paymentId;
+    private TicketStatus status;
 }
